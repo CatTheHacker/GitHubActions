@@ -1,0 +1,24 @@
+name: Environment info - Windows
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 */7 * *
+
+jobs:
+  print-environment-info:
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        windows: [latest, 2019]
+    name: Run job on ${{ matrix.windows }}
+    runs-on: windows-${{ matrix.windows }}
+    steps:
+      - run: Get-Content ~/.docker/config.json
+      - run: docker system info
+      - run: Get-Service
+      - run: Get-ChildItem -Recurse C:\ProgramData\docker
+      - run: Get-ChildItem 'C:\Program Files\'
+      - run: Get-ChildItem 'C:\Program Files (x86)\'

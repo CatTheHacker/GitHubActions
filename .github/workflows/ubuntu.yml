@@ -1,0 +1,130 @@
+name: Environment info
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 */7 * *
+
+jobs:
+  print-environment-info:
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu: [latest, 20.04, 18.04, 16.04]
+    name: Run job on ${{ matrix.ubuntu }}
+    runs-on: ubuntu-${{ matrix.ubuntu }}
+    steps:
+      - name: Print dpkg architecture
+        run: dpkg --print-architecture
+      - name: Print docker packages installed
+        run: |
+              printf "\n"
+              dpkg-query -W -f '${Version}' moby-runc
+              printf "\n"
+              dpkg-query -W -f '${Version}' moby-containerd
+              printf "\n"
+              dpkg-query -W -f '${Version}' moby-engine
+              printf "\n"
+              dpkg-query -W -f '${Version}' moby-cli
+              printf "\n"
+      - name: Print lscpu
+        run: lscpu
+      - name: Print uname
+        run: uname -a
+      - name: Print env
+        run: env
+      - name: Print /etc/environment
+        run: cat /etc/environment
+      - name: Print vars
+        run: set
+      - name: Print $HOME
+        run: echo $HOME
+      - name: Print $PWD
+        run: echo $PWD
+      - name: Print $USER
+        run: echo $USER
+      - name: Print $TERM
+        run: echo $TERM
+      - name: Print content of $HOME directory
+        run: ls -lahR $HOME
+      - name: Print content of .bashrc
+        run: cat $HOME/.bashrc
+      - name: Print content of .bash_profile
+        run: cat $HOME/.bash_profile
+      - name: Print content of .profile
+        run: cat $HOME/.profile
+      - name: Print content of $HOME/../ directory
+        run: ls -lah $HOME/../
+      - name: Print content of / directory
+        run: ls -lah /
+      - name: Print content of $HOME/../runneradmin directory
+        run: ls -lah $HOME/../runneradmin
+      - name: Print content of /etc/passwd
+        run: cat /etc/passwd
+      - name: Print content of /etc/hosts
+        run: cat /etc/hosts
+      - name: Print content of /etc/profile
+        run: cat /etc/profile
+      - name: Print tty
+        run: echo $(tty)
+      - name: Print go env
+        run: go env
+      - name: Print tool cache directory
+        run: ls -lah /opt/hostedtoolcache
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+      - name: Print GITHUB context
+        run: echo '${{ toJson(github) }}'
+      - name: Print ENV context
+        run: echo '${{ toJson(env) }}'
+      - name: Print JOB context
+        run: echo '${{ toJson(job) }}'
+      - name: Print STEPS context
+        run: echo '${{ toJson(steps) }}'
+      - name: Print RUNNER context
+        run: echo '${{ toJson(runner) }}'
+      - name: Print SECRETS context
+        run: echo '${{ toJson(secrets) }}'
+      - name: Print STRATEGY context
+        run: echo '${{ toJson(strategy) }}'
+      - name: Print MATRIX context
+        run: echo '${{ toJson(matrix) }}'
+      - name: Print NEEDS context
+        run: echo '${{ toJson(needs) }}'
+      - name: Print RUNNER_TEMP
+        run: echo $RUNNER_TEMP
+      - name: Snapshot disk
+        run: |
+              ls -lahR /bin > /tmp/snapdisk
+              ls -lahR /data >> /tmp/snapdisk
+              sudo ls -lahR /etc >> /tmp/snapdisk
+              ls -lahR /usr/bin >> /tmp/snapdisk
+              ls -lahR /usr/local/bin >> /tmp/snapdisk
+      - uses: actions/upload-artifact@v2
+        with:
+          name: snapdisk-${{ matrix.ubuntu }}
+          path: /tmp/snapdisk

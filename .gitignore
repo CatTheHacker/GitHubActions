@@ -1,0 +1,12 @@
+# Everything
+*
+# Allow dirs
+!*/
+# Ignore act/
+act/
+# Allow workflows and specific files
+!.github/**/ubuntu.yml
+!.github/**/windows.yml
+!.github/**/macos.yml
+!README.md
+!.gitignore
