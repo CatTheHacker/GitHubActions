@@ -16,7 +16,10 @@ jobs:
     name: Run job on ${{ matrix.ubuntu }}
     runs-on: ubuntu-${{ matrix.ubuntu }}
     steps:
-      - name: Print policies
+      - run: |
+            dpkg-query -W -f '${Version}' libc++-dev
+            cat /etc/apt/sources.list
+      - name: Print apt policies
         shell: pwsh
         run: |
               foreach($i in $(apt list --installed | cut -d "/" -f 1)){
