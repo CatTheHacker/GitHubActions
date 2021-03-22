@@ -17,8 +17,10 @@ jobs:
     runs-on: ubuntu-${{ matrix.ubuntu }}
     steps:
       - run: |
-            dpkg-query -W -f '${Version}' libc++-dev
-            cat /etc/apt/sources.list
+            dpkg-query -W -f '${Package}|${Version}\n' libc++-11-dev
+            dpkg-query -W -f '${Package}|${Version}\n' libc++abi-dev
+            dpkg-query -W -f '${Package}|${Version}\n' libc++-dev
+            dpkg-query -W -f '${Package}|${Version}\n' libc++abi-11-dev
       - name: Print apt policies
         shell: pwsh
         run: |
