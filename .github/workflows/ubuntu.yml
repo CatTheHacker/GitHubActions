@@ -16,13 +16,9 @@ jobs:
     name: Run job on ${{ matrix.ubuntu }}
     runs-on: ubuntu-${{ matrix.ubuntu }}
     steps:
-      - if: ${{ matrix.ubuntu == '20.04' }}
-        continue-on-error: true
-        run: |
-            dpkg-query -W -f '${Package}|${Version}\n' libc++-11-dev
-            dpkg-query -W -f '${Package}|${Version}\n' libc++abi-dev
-            dpkg-query -W -f '${Package}|${Version}\n' libc++-dev
-            dpkg-query -W -f '${Package}|${Version}\n' libc++abi-11-dev
+      - run: |
+             sudo apt update
+             sudo apt-cache moby-cli
       - name: Print apt policies
         shell: pwsh
         run: |
