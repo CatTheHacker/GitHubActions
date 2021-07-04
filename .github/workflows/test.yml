@@ -29,8 +29,8 @@ jobs:
              sudo rm -rf /home/linuxbrew
              ver=$(echo "${{ matrix.ubuntu }}" | sed 's|\.||g')
              wget -qO "toolset.json" "https://raw.githubusercontent.com/actions/virtual-environments/main/images/linux/toolsets/toolset-${ver}.json"
-             common_packages=$(jq -r ".apt.common_packages[]" "toolset.json")
-             cmd_packages=$(jq -r ".apt.cmd_packages[]" "toolset.json")
+             common_packages=$(jq -r ".apt.common_packages[] | @sh" "toolset.json")
+             cmd_packages=$(jq -r ".apt.cmd_packages[] | @sh" "toolset.json")
              sudo apt-get purge -y "${common_packages[@]}"
              sudo apt-get purge -y "${cmd_packages[@]}"
              sudo apt-get -y autoremove
