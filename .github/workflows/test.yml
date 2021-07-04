@@ -1,0 +1,28 @@
+name: Environment info
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        ubuntu: [latest]
+    name: Run job on ${{ matrix.ubuntu }}
+    runs-on: ubuntu-${{ matrix.ubuntu }}
+    steps:
+      - run: |
+             sudo swapoff -a
+             sudo rm -f /swapfile
+             sudo rm -rf "/usr/local/share/boost"
+             sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+             sudo rm -rf /usr/share/dotnet/
+             sudo rm -rf "$ANDROID_SDK_ROOT"
+             sudo rm -rf /usr/local/lib/android
+             sudo rm -rf "$SWIFT_PATH"
+             sudo rm -rf /usr/share/swift
+             docker system prune -a -f
+             df -h
