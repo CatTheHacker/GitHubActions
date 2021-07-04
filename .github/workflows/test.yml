@@ -31,10 +31,7 @@ jobs:
              wget -qO "toolset.json" "https://raw.githubusercontent.com/actions/virtual-environments/main/images/linux/toolsets/toolset-${ver}.json"
              common_packages=$(jq -r ".apt.common_packages[]" "toolset.json")
              cmd_packages=$(jq -r ".apt.cmd_packages[]" "toolset.json")
-             for package in $common_packages $cmd_packages; do
-                 echo "Delete $package"
-                 sudo apt-get purge -y "$package"
-             done
+             sudo apt-get purge -y "${common_packages[@]}" "${cmd_packages[@]}"
              sudo apt-get -y autoremove
              sudo apt-get -y clean
              df -h
