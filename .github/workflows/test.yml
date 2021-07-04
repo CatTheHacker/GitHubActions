@@ -1,4 +1,4 @@
-name: Environment info
+name: Clear maximum space
 on:
   push:
   pull_request:
@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ubuntu: [latest]
+        ubuntu: [20.04]
     name: Run job on ${{ matrix.ubuntu }}
     runs-on: ubuntu-${{ matrix.ubuntu }}
     steps:
@@ -26,5 +26,15 @@ jobs:
              sudo rm -rf /usr/share/swift
              sudo rm -rf /usr/lib/node_modules
              sudo docker system prune -a -f
-             sudo apt-get clean
+             sudo rm -rf /home/linuxbrew
+             ver=$(echo "${{ matrix.ubuntu }}" | sed 's|\.||g')
+             wget -qO "toolset.json" "https://raw.githubusercontent.com/actions/virtual-environments/main/images/linux/toolsets/toolset-${ver}.json"
+             common_packages=$(jq -r ".apt.common_packages[]" "toolset.json")
+             cmd_packages=$(jq -r ".apt.cmd_packages[]" "toolset.json")
+             for package in $common_packages $cmd_packages; do
+                 echo "Delete $package"
+                 sudo apt-get purge -y "$package"
+             done
+             sudo apt-get -y autoremove
+             sudo apt-get -y clean
              df -h
