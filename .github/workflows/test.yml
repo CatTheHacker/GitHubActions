@@ -24,5 +24,7 @@ jobs:
              sudo rm -rf /usr/local/lib/android
              sudo rm -rf "$SWIFT_PATH"
              sudo rm -rf /usr/share/swift
-             docker system prune -a -f
+             sudo rm -rf /usr/lib/node_modules
+             sudo docker system prune -a -f
+             sudo apt-get clean
              df -h
